@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 let noteData = require('../db/db.json');
 const uuid = require('..//helpers/util');
-const { nextTick } = require('process');
+
 
 
 // get data from the DB
@@ -21,11 +21,11 @@ notes.get('/notes', (req, res) => {
     });
 })
 //post route
-notes.post('/notes', (reg, res) => {
+notes.post('/notes', (req, res) => {
     console.log(`${req.method} request to add note recieved.`);
     console.log(req.body);
 
-    const {title, text} = reg.body;
+    const {title, text} = req.body;
 
     if (title && text) {
         const newNote = {
@@ -35,7 +35,7 @@ notes.post('/notes', (reg, res) => {
         };
         noteData.push(newNote);
 
-        const allNotes =JSON.stringify(noteData, null, 2);
+        const allNotes = JSON.stringify(noteData, null, 2);
 
         fs.writeFile(path.join(__dirname, '../db/db.json'), allNotes, (err) => {
             err ? console.error(err) : console.log(`Note titled: '${newNote.title}' has been posted in JSON file`)
@@ -49,7 +49,34 @@ notes.post('/notes', (reg, res) => {
 notes.get('/notes/:id', (req, res) => {
     const noteId = req.params.id;
 
-    console.log('${req} request recieved');
+    console.log(`${req} request for notes has been received`);
     let result = noteData.filter((note) => note.id === noteId);
     res.json(result);
 });
+
+
+//delete note
+
+notes.delete('/notes/:id', (req, res) => {
+    const noteId = req.params.id;
+
+    if (noteId) {
+        console.log(noteId);
+        console.log(noteData);
+        let deleteNoteId = noteData.filter((note) => note.id !== noteId);
+        console.log(noteData);
+        const allNotes = JSON.stringify(deleteNoteId, null, 2);
+        console.log(allNotes);
+        fs.writeFile(path.join(__dirname, '../db/db.json'), allNotes, (err) => {
+            if (err) {
+                console.error(err);
+                res.json(err);
+            } else {
+                console.log(`Note ${noteId} has been deleted`);
+                res.json(deleteNoteId);
+            }
+        });
+    }
+});
+
+module.exports = notes;
