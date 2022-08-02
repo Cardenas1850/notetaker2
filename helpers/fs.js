@@ -1,4 +1,4 @@
-const fs = require('fs');
+// const fs = require('fs');
 const { stringify } = require('querystring');
 const { fileURLToPath } = require('url');
 const util = require('util');
@@ -31,4 +31,4 @@ const writeToFile = (destination, content) =>
         });
     };
 
-    module.exports = {readFromFile, writeToFile, readAndAppend};
+    module.exports = {readFromFile, writeToFile, readAndAppend}; 
